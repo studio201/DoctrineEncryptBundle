@@ -1,6 +1,6 @@
 # Customer encryption class
 
-We can imagine that you want to use your own encryption class, it is simpel.
+We can imagine that you want to use your own encryption class, it is simple.
 
 ### Warning: make sure you add the `<ENC>` after your encrypted string.
 
