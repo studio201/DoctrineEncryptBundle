@@ -1,5 +1,5 @@
 {
-    "name": "michaeldegroot/doctrine-encrypt-bundle",
+    "name": "studio201/doctrine-encrypt-bundle",
     "type": "library",
     "keywords": ["doctrine", "symfony", "halite", "defuse", "encrypt", "decrypt"],
     "license": "MIT",
@@ -26,8 +26,8 @@
     "target-dir": "Ambta/DoctrineEncryptBundle",
     "authors": [
         {
-            "name": "Michael de Groot",
-            "email": "specamps@gmail.com"
+            "name": "Thomas Krahmer",
+            "email": "tk@studio201.de"
         }
     ]
 }
