@@ -1,6 +1,6 @@
 <?php
 
-namespace Ambta\DoctrineEncryptBundle\Subscribers;
+namespace Studio201\DoctrineEncryptBundle\Subscribers;
 
 use ReflectionClass;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -11,7 +11,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
-use Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use ReflectionProperty;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 

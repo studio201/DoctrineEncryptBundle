@@ -1,7 +1,7 @@
 <?php
-namespace Ambta\DoctrineEncryptBundle\Command;
+namespace Studio201\DoctrineEncryptBundle\Command;
 
-use Ambta\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
+use Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ambta\DoctrineEncryptBundle\Encryptors;
+namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Encryptor interface for encryptors

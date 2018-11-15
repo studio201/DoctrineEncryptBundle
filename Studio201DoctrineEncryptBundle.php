@@ -1,14 +1,14 @@
 <?php
 
-namespace Ambta\DoctrineEncryptBundle;
+namespace Studio201\DoctrineEncryptBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
-use Ambta\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
-use Ambta\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
+use Studio201\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
+use Studio201\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
 
-class AmbtaDoctrineEncryptBundle extends Bundle
+class Studio201DoctrineEncryptBundle extends Bundle
 {
     public function build(ContainerBuilder $container)
     {
