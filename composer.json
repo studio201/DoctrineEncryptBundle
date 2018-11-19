@@ -1,6 +1,6 @@
 {
     "name": "studio201/doctrine-encrypt-bundle",
-    "type": "library",
+    "type" : "symfony-bundle",
     "keywords": ["doctrine", "symfony", "halite", "defuse", "encrypt", "decrypt"],
     "license": "MIT",
     "description": "Encrypted symfony entity's by verified and standardized libraries",
