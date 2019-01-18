@@ -6,7 +6,7 @@
     "description": "Encrypted symfony entity's by verified and standardized libraries",
     "require": {
         "php": ">=7.0",
-        "paragonie/halite": "^1.6",
+        "paragonie/halite": "^3.4",
         "paragonie/sodium_compat": "^1.5",
         "doctrine/orm": "^2.5",
         "symfony/property-access": "^3.3",
