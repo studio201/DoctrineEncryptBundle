@@ -5,7 +5,7 @@
     "license": "MIT",
     "description": "Encrypted symfony entity's by verified and standardized libraries",
     "require": {
-        "php": ">=7.0",
+        "php": ">=5.6",
         "paragonie/halite": "^3.4",
         "paragonie/sodium_compat": "^1.5",
         "doctrine/orm": "^2.5",
