@@ -1,38 +1,38 @@
 services:
-    studiuo201_doctrine_encrypt.orm_subscriber:
-        class: Studiuo201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
-        arguments: ["@annotation_reader", "@studiuo201_doctrine_encrypt.encryptor"]
+    studio201_doctrine_encrypt.orm_subscriber:
+        class: Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
+        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor"]
         tags:
             -  { name: doctrine.event_subscriber }
 
-    studiuo201_doctrine_encrypt.subscriber:
-        alias: studiuo201_doctrine_encrypt.orm_subscriber
+    studio201_doctrine_encrypt.subscriber:
+        alias: studio201_doctrine_encrypt.orm_subscriber
 
-    studiuo201_doctrine_encrypt.encryptor:
-        class: "%studiuo201_doctrine_encrypt.encryptor_class_name%"
+    studio201_doctrine_encrypt.encryptor:
+        class: "%studio201_doctrine_encrypt.encryptor_class_name%"
         arguments:
-          - "%studiuo201_doctrine_encrypt.secret_key_path%"
+          - "%studio201_doctrine_encrypt.secret_key_path%"
 
-    studiuo201_doctrine_encrypt.command.decrypt.database:
-        class: Studiuo201\DoctrineEncryptBundle\Command\DoctrineDecryptDatabaseCommand
+    studio201_doctrine_encrypt.command.decrypt.database:
+        class: Studio201\DoctrineEncryptBundle\Command\DoctrineDecryptDatabaseCommand
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@annotation_reader"
-            - "@studiuo201_doctrine_encrypt.subscriber"
+            - "@studio201_doctrine_encrypt.subscriber"
 
-    studiuo201_doctrine_encrypt.command.encrypt.database:
-        class: Studiuo201\DoctrineEncryptBundle\Command\DoctrineEncryptDatabaseCommand
+    studio201_doctrine_encrypt.command.encrypt.database:
+        class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptDatabaseCommand
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@annotation_reader"
-            - "@studiuo201_doctrine_encrypt.subscriber"
+            - "@studio201_doctrine_encrypt.subscriber"
 
-    studiuo201_doctrine_encrypt.command.encrypt.status:
-        class: Studiuo201\DoctrineEncryptBundle\Command\DoctrineEncryptStatusCommand
+    studio201_doctrine_encrypt.command.encrypt.status:
+        class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptStatusCommand
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
             - "@annotation_reader"
-            - "@studiuo201_doctrine_encrypt.subscriber"
+            - "@studio201_doctrine_encrypt.subscriber"

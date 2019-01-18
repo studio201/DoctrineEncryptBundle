@@ -41,7 +41,7 @@ public function registerBundles()
 {
     $bundles = array(
         // ...
-        new Ambta\DoctrineEncryptBundle\AmbtaDoctrineEncryptBundle(),
+        new Studio201\DoctrineEncryptBundle\Studio201DoctrineEncryptBundle(),
     );
 }
 ```

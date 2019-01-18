@@ -28,12 +28,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Encryptor interface namespace
      */
-    const ENCRYPTOR_INTERFACE_NS = 'Ambta\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
+    const ENCRYPTOR_INTERFACE_NS = 'Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
 
     /**
      * Encrypted annotation full name
      */
-    const ENCRYPTED_ANN_NAME = 'Ambta\DoctrineEncryptBundle\Configuration\Encrypted';
+    const ENCRYPTED_ANN_NAME = 'Studio201\DoctrineEncryptBundle\Configuration\Encrypted';
 
     /**
      * Encryptor
@@ -42,10 +42,22 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     private $encryptor;
 
     /**
+     * Encryptor
+     * @var EncryptorInterface
+     */
+    private $oldEncryptor;
+
+    /**
      * Annotation reader
      * @var \Doctrine\Common\Annotations\Reader
      */
     private $annReader;
+
+    /**
+     * Secret key
+     * @var string
+     */
+    private $secretKey;
 
     /**
      * Used for restoring the encryptor after changing it
@@ -66,10 +78,21 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     public $encryptCounter = 0;
 
     /**
+     * @var
+     */
+    protected $logger;
+
+    /**
+     * @var
+     */
+    protected $entityManager;
+
+    /**
      * Initialization of subscriber
      *
      * @param Reader $annReader
      * @param string $encryptorClass  The encryptor class.  This can be empty if a service is being provided.
+     * @param string $secretKey The secret key.
      * @param EncryptorInterface|NULL $service (Optional)  An EncryptorInterface.
      *
      * This allows for the use of dependency injection for the encrypters.
@@ -108,6 +131,43 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         $this->encryptor = $this->restoreEncryptor;
     }
+     /**
+     * @return EncryptorInterface
+     */
+    public function getOldEncryptor()
+    {
+        return $this->oldEncryptor;
+    }
+
+    /**
+     * @param EncryptorInterface $oldEncryptorClass
+     */
+    public function setOldEncryptor($oldEncryptorClass)
+    {
+        if (!is_null($oldEncryptorClass)) {
+            $this->oldEncryptor = $this->encryptorFactory($oldEncryptorClass, $this->secretKey);
+
+            return;
+        }
+
+        $this->oldEncryptor = null;
+    }
+
+    /**
+     * @param mixed $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param mixed $entityManager
+     */
+    public function setEntityManager($entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     /**
      * Listen a postUpdate lifecycle event.
@@ -144,8 +204,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function postLoad(LifecycleEventArgs $args)
     {
+
+        //Get entity and process fields
         $entity = $args->getEntity();
         $this->processFields($entity, false);
+
     }
 
     /**
@@ -218,6 +281,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             }
 
             // Get ReflectionClass of our entity
+            $reflectionClass = new ReflectionClass($realClass);
             $properties = $this->getClassProperties($realClass);
 
             // Foreach property in the reflection class
@@ -240,6 +304,18 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                 $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -5));
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                             }
+                            else {
+                                        $this->logger->err("processFields not encrypted with new method, trying old one".get_class($this->oldEncryptor)." for ".$getInformation);
+                                        try {
+                                            $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
+                                            $this->logger->err("processFields set 2 ".$currentPropValue);
+                                            //$this->entityManager->getUnitOfWork()->removeFromIdentityMap($entity);//>markReadOnly($entity);
+                                            //
+                                        } catch (\Exception $ex) {
+                                            $currentPropValue = $getInformation;
+                                            $this->logger->err("processFields set error ".$ex->getMessage());
+                                        }
+                                    }
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
@@ -247,7 +323,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                 $this->encryptCounter++;
                                 $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                            }
+                            }else {
+                                        $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
+                                        $entity->$setter($currentPropValue);
+                                        $this->logger->err("processFields set 4");
+                                    }
                         }
                     }
                 }
