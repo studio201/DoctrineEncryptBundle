@@ -27,14 +27,17 @@ class Configuration implements ConfigurationInterface
 
         // Grammar of config tree
         $rootNode
-                ->children()
-                    ->scalarNode('encryptor_class')
-                        ->defaultValue('Halite')
-                    ->end()
-                    ->scalarNode('secret_directory_path')
-                        ->defaultValue('%kernel.project_dir%')
-                    ->end()
-                ->end();
+            ->children()
+            ->scalarNode('encryptor_class')
+            ->defaultValue('Halite')
+            ->end()
+            ->scalarNode('secret_directory_path')
+            ->defaultValue('%kernel.project_dir%')
+            ->end()
+            ->scalarNode('old_secret_key')
+            ->defaultValue('')
+            ->end()
+            ->end();
 
         return $treeBuilder;
     }

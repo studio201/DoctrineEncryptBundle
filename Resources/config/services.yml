@@ -1,10 +1,13 @@
 services:
     studio201_doctrine_encrypt.orm_subscriber:
         class: Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
-        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor"]
+        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor", ""]
         tags:
             -  { name: doctrine.event_subscriber }
-
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+            - [ setEntityManager, [ '@doctrine.orm.entity_manager' ] ]
+            - [ setOldEncryptor, [ 'Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor'] ]
     studio201_doctrine_encrypt.subscriber:
         alias: studio201_doctrine_encrypt.orm_subscriber
 

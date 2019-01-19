@@ -2,17 +2,17 @@
 
 namespace Studio201\DoctrineEncryptBundle\Subscribers;
 
-use ReflectionClass;
-use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Events;
-use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
-use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Util\ClassUtils;
-use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
+use Doctrine\ORM\Events;
+use ReflectionClass;
 use ReflectionProperty;
+use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
@@ -23,7 +23,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Appended to end of encrypted value
      */
-    const ENCRYPTION_MARKER = '<ENC>';
+    const ENCRYPTION_MARKER = '<ENCv1>';
 
     /**
      * Encryptor interface namespace
@@ -91,27 +91,18 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Initialization of subscriber
      *
      * @param Reader $annReader
-     * @param string $encryptorClass  The encryptor class.  This can be empty if a service is being provided.
+     * @param string $encryptorClass The encryptor class.  This can be empty if a service is being provided.
      * @param string $secretKey The secret key.
      * @param EncryptorInterface|NULL $service (Optional)  An EncryptorInterface.
      *
      * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, EncryptorInterface $encryptor)
+    public function __construct(Reader $annReader, EncryptorInterface $encryptor, $oldSecretKey = null)
     {
         $this->annReader = $annReader;
         $this->encryptor = $encryptor;
         $this->restoreEncryptor = $this->encryptor;
-    }
-
-    /**
-     * Change the encryptor
-     * @param [type] $[name] [<description>]
-     * @param EncryptorInterface $encryptorClass
-     */
-    public function setEncryptor(EncryptorInterface $encryptorClass = null)
-    {
-        $this->encryptor = $encryptorClass;
+        $this->secretKey = $oldSecretKey;
     }
 
     /**
@@ -125,13 +116,24 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     }
 
     /**
+     * Change the encryptor
+     * @param [type] $[name] [<description>]
+     * @param EncryptorInterface $encryptorClass
+     */
+    public function setEncryptor(EncryptorInterface $encryptorClass = null)
+    {
+        $this->encryptor = $encryptorClass;
+    }
+
+    /**
      * Restore encryptor set in config
      */
     public function restoreEncryptor()
     {
         $this->encryptor = $this->restoreEncryptor;
     }
-     /**
+
+    /**
      * @return EncryptorInterface
      */
     public function getOldEncryptor()
@@ -146,7 +148,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         if (!is_null($oldEncryptorClass)) {
             $this->oldEncryptor = $this->encryptorFactory($oldEncryptorClass, $this->secretKey);
-
             return;
         }
 
@@ -180,8 +181,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function postUpdate(LifecycleEventArgs $args)
     {
+
         $entity = $args->getEntity();
         $this->processFields($entity, false);
+
     }
 
     /**
@@ -192,6 +195,17 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function preUpdate(PreUpdateEventArgs $args)
     {
+        $entity = $args->getEntity();
+        $this->processFields($entity);
+    }
+
+    /**
+     * Listen a prePersist lifecycle event.
+     * @param LifecycleEventArgs $args
+     */
+    public function prePersist(LifecycleEventArgs $args)
+    {
+
         $entity = $args->getEntity();
         $this->processFields($entity);
     }
@@ -269,6 +283,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function processFields($entity, $isEncryptOperation = true)
     {
+        
         if (!empty($this->encryptor)) {
             // Check which operation to be used
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
@@ -290,44 +305,47 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                     $this->handleEmbeddedAnnotation($entity, $refProperty, $isEncryptOperation);
                     continue;
                 }
-
+                
                 /**
                  * If property is an normal value and contains the Encrypt tag, lets encrypt/decrypt that property
                  */
                 if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+                    
                     $pac = PropertyAccess::createPropertyAccessor();
                     $value = $pac->getValue($entity, $refProperty->getName());
                     if ($encryptorMethod == 'decrypt') {
+                       
                         if (!is_null($value) and !empty($value)) {
+                            $currentPropValue = $value;
+                           
                             if (substr($value, -strlen(self::ENCRYPTION_MARKER)) == self::ENCRYPTION_MARKER) {
                                 $this->decryptCounter++;
-                                $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -5));
-                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                            }
-                            else {
-                                        $this->logger->err("processFields not encrypted with new method, trying old one".get_class($this->oldEncryptor)." for ".$getInformation);
-                                        try {
-                                            $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
-                                            $this->logger->err("processFields set 2 ".$currentPropValue);
-                                            //$this->entityManager->getUnitOfWork()->removeFromIdentityMap($entity);//>markReadOnly($entity);
-                                            //
-                                        } catch (\Exception $ex) {
-                                            $currentPropValue = $getInformation;
-                                            $this->logger->err("processFields set error ".$ex->getMessage());
-                                        }
+                                $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -strlen(self::ENCRYPTION_MARKER)));
+                               
+                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                 $name = $refProperty->getName();
+                            } else {
+                                try {
+                                    if ($this->oldEncryptor != null) {
+                                        $currentPropValue = $this->oldEncryptor->decrypt($value);
+                                        
                                     }
+                                } catch (\Exception $ex) {
+                                    $currentPropValue = $value;
+                                }
+                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                            }
+                           
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
                             if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                 $this->encryptCounter++;
                                 $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
-                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                            }else {
-                                        $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
-                                        $entity->$setter($currentPropValue);
-                                        $this->logger->err("processFields set 4");
-                                    }
+                             }
+                           
+                            $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                            
                         }
                     }
                 }
@@ -339,7 +357,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         return $entity;
     }
 
-    private function handleEmbeddedAnnotation($entity, ReflectionProperty $embeddedProperty, bool $isEncryptOperation = true)
+    private function handleEmbeddedAnnotation($entity, ReflectionProperty $embeddedProperty, $isEncryptOperation = true)
     {
         $propName = $embeddedProperty->getName();
 
@@ -363,7 +381,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     private function getClassProperties($className)
     {
         $reflectionClass = new ReflectionClass($className);
-        $properties      = $reflectionClass->getProperties();
+        $properties = $reflectionClass->getProperties();
         $propertiesArray = array();
 
         foreach ($properties as $property) {
@@ -379,5 +397,24 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         }
 
         return $propertiesArray;
+    }
+
+    /**
+     * Encryptor factory. Checks and create needed encryptor
+     *
+     * @param string $classFullName Encryptor namespace and name
+     * @param string $secretKey Secret key for encryptor
+     *
+     * @return EncryptorInterface
+     * @throws \RuntimeException
+     */
+    private function encryptorFactory($classFullName, $secretKey)
+    {
+        $refClass = new \ReflectionClass($classFullName);
+        //if ($refClass->implementsInterface(self::ENCRYPTOR_INTERFACE_NS)) {
+            return new $classFullName($secretKey);
+        //} else {
+        //    throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
+       // }
     }
 }
