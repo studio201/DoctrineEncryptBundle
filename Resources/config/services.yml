@@ -16,10 +16,7 @@ services:
     studio201_doctrine_encrypt.subscriber:
         alias: studio201_doctrine_encrypt.orm_subscriber
 
-    studio201_doctrine_encrypt.encryptor:
-        class: "%studio201_doctrine_encrypt.encryptor_class_name%"
-        arguments:
-          - "%studio201_doctrine_encrypt.secret_key_path%"
+
 
     studio201_doctrine_encrypt.command.decrypt.database:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineDecryptDatabaseCommand
