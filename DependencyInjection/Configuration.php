@@ -24,7 +24,9 @@ class Configuration implements ConfigurationInterface
         // Create tree builder
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('studio201_doctrine_encrypt');
-
+        $supportedDrivers = array('orm');
+        $supportedEncryptors = array('aes256');
+        
         $rootNode
                 ->children()
                     ->scalarNode('secret_key')
