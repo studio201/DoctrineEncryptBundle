@@ -25,16 +25,33 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('studio201_doctrine_encrypt');
 
-        // Grammar of config tree
         $rootNode
-            ->children()
-            ->scalarNode('encryptor_class_name')
-            ->defaultValue('Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor')
-            ->end()
-            ->scalarNode('secret_key')
-            ->defaultValue('')
-            ->end()
-            ->end();
+                ->children()
+                    ->scalarNode('secret_key')
+                        ->beforeNormalization()
+                        ->ifNull()
+                            ->thenInvalid('You must specifiy secret_key option')
+                        ->end()
+                    ->end()
+                    ->scalarNode('encryptor')
+                        ->validate()
+                        ->ifNotInArray($supportedEncryptors)
+                            ->thenInvalid('You must choose from one of provided encryptors or specify your own encryptor class through encryptor_class option')
+                        ->end()
+                        ->defaultValue($supportedEncryptors[0])
+                    ->end()
+                    ->scalarNode('encryptor_class')
+                    ->end()
+                    ->scalarNode('db_driver')
+                        ->validate()
+                            ->ifNotInArray($supportedDrivers)
+                                ->thenInvalid('The driver %s is not supported. Please choose one of ' . json_encode($supportedDrivers))
+                            ->end()
+                            ->cannotBeOverwritten()
+                        ->defaultValue($supportedDrivers[0])
+                        ->cannotBeEmpty()
+                    ->end()
+                ->end();
 
         return $treeBuilder;
     }
