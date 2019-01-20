@@ -24,7 +24,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Appended to end of encrypted value
      */
     const ENCRYPTION_MARKER = '<ENCv1>';
-
+    
     const ENCRYPTION_MARKER_OLD = '<ENC>';
 
     /**
@@ -333,7 +333,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                
                                  $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                                  $name = $refProperty->getName();
-                            } else {
+                            }else {
                                
                                 try {
                                     if ($this->oldEncryptor != null) {

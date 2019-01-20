@@ -41,7 +41,6 @@ class DoctrineEncryptExtension extends Extension
         $container->setParameter('studio201_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
         $container->setParameter('studio201_doctrine_encrypt.old_secret_key', $config['old_secret_key']);
         $container->setParameter('studio201_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
-
         // Load service file
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
