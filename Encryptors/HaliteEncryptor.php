@@ -2,8 +2,9 @@
 
 namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
-use \ParagonIE\Halite\HiddenString;
+
 use \ParagonIE\Halite\EncryptionKey;
+use ParagonIE\Halite\HiddenString;
 use \ParagonIE\Halite\KeyFactory;
 use \ParagonIE\Halite\Symmetric\Crypto;
 
@@ -21,7 +22,7 @@ class HaliteEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct(string $keyFile)
+    public function __construct($keyFile)
     {
         $this->encryptionKey = null;
         $this->keyFile = $keyFile;

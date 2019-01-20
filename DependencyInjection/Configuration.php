@@ -28,13 +28,10 @@ class Configuration implements ConfigurationInterface
         // Grammar of config tree
         $rootNode
             ->children()
-            ->scalarNode('encryptor_class')
-            ->defaultValue('Halite')
+            ->scalarNode('encryptor_class_name')
+            ->defaultValue('Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor')
             ->end()
-            ->scalarNode('secret_directory_path')
-            ->defaultValue('%kernel.project_dir%')
-            ->end()
-            ->scalarNode('old_secret_key')
+            ->scalarNode('secret_key')
             ->defaultValue('')
             ->end()
             ->end();

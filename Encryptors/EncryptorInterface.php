@@ -13,7 +13,7 @@ interface EncryptorInterface
     /**
      * @param string $keyFile Path where to find and store the keyfile
      */
-    public function __construct(string $keyFile);
+    public function __construct($keyFile);
 
     /**
      * @param string $data Plain text to encrypt
