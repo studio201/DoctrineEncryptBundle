@@ -156,7 +156,6 @@ class OldCoreEncryptor implements EncryptorInterface
 
         //prepend the IV for it to be available for decryption
         $cipherText = $iv.$cipherText;
-
         return self::encode($cipherText);
     }
 

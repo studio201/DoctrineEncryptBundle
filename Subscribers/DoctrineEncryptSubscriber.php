@@ -305,7 +305,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
 
             //Get the real class, we don't want to use the proxy classes
-            if (strstr(get_class($entity), "Proxies")) {
+            if (strstr(get_class($entity), 'Proxies')) {
                 $realClass = ClassUtils::getClass($entity);
             } else {
                 $realClass = get_class($entity);
@@ -317,96 +317,63 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
             //Foreach property in the reflection class
             foreach ($properties as $refProperty) {
-
-
                 if ($this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded')) {
                     $this->handleEmbeddedAnnotation($entity, $refProperty, $isEncryptOperation);
                     continue;
                 }
-                /**
-                 * If followed standards, method name is getPropertyName, the propertyName is lowerCamelCase
-                 * So just uppercase first character of the property, later on get and set{$methodName} wil be used
-                 */
-                $methodName = ucfirst($refProperty->getName());
-
 
                 /**
                  * If property is an normal value and contains the Encrypt tag, lets encrypt/decrypt that property
                  */
                 if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
 
+                    $pac = PropertyAccess::createPropertyAccessor();
+                    $value = $pac->getValue($entity, $refProperty->getName());
+                    if ($encryptorMethod == 'decrypt') {
 
-                    /**
-                     * If it is public lets not use the getter/setter
-                     */
-                    if ($refProperty->isPublic()) {
-                        $propName = $refProperty->getName();
-                        $entity->$propName = $this->encryptor->$encryptorMethod($refProperty->getValue());
-                    } else {
-                        $this->logger->err("processFields 2");
-                        //If private or protected check if there is an getter/setter for the property, based on the $methodName
-                        if ($reflectionClass->hasMethod($getter = 'get'.$methodName) && $reflectionClass->hasMethod($setter = 'set'.$methodName)) {
-                            $this->logger->err("processFields 3");
-                            //Get the information (value) of the property
-                            try {
-                                $getInformation = $entity->$getter();
-                            } catch (\Exception $e) {
-                                $getInformation = null;
-                            }
+                        if (!is_null($value) and !empty($value)) {
+                            $currentPropValue = $value;
 
-                            /**
-                             * Then decrypt, encrypt the information if not empty, information is an string and the <ENC> tag is there (decrypt) or not (encrypt).
-                             * The <ENC> will be added at the end of an encrypted string so it is marked as encrypted. Also protects against double encryption/decryption
-                             */
-                            if ($encryptorMethod == "decrypt") {
-                                $this->logger->err("processFields 4: decrypt");
-                                if (!is_null($getInformation) and !empty($getInformation)) {
-                                    if (substr($getInformation, -5) == "<ENC>") {
+                            if (substr($value, -strlen(self::ENCRYPTION_MARKER)) == self::ENCRYPTION_MARKER) {
                                         $this->decryptCounter++;
-                                        $currentPropValue = $this->encryptor->decrypt(substr($getInformation, 0, -5));
-                                        $this->logger->err("processFields set 1 ".$currentPropValue);
-                                        //$this->entityManager->getUnitOfWork()->removeFromIdentityMap($entity);//>markReadOnly($entity);
+                                $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -strlen(self::ENCRYPTION_MARKER)));
+                               
+                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                 $name = $refProperty->getName();
                                     } else {
-                                        $this->logger->err("processFields not encrypted with new method, trying old one".get_class($this->oldEncryptor)." for ".$getInformation);
                                         try {
-                                            $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
-                                            $this->logger->err("processFields set 2 ".$currentPropValue);
-                                            //$this->entityManager->getUnitOfWork()->removeFromIdentityMap($entity);//>markReadOnly($entity);
-                                            //
-                                        } catch (\Exception $ex) {
-                                            $currentPropValue = $getInformation;
-                                            $this->logger->err("processFields set error ".$ex->getMessage());
-                                        }
+                                    if ($this->oldEncryptor != null) {
+                                        $currentPropValue = $this->oldEncryptor->decrypt($value);
+                                        
                                     }
-                                    $entity->$setter($currentPropValue);
+                                        } catch (\Exception $ex) {
+                                    $currentPropValue = $value;
+                                        }
+                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                    }
 
-                                    //}
                                 }
                             } else {
-                                $this->logger->err("processFields 5: encrypt");
-                                if (!is_null($getInformation) and !empty($getInformation)) {
-                                    if (substr($entity->$getter(), -5) != "<ENC>") {
+                        if (!is_null($value) and !empty($value)) {
+                            if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                         $this->encryptCounter++;
-                                        $currentPropValue = $this->encryptor->encrypt($entity->$getter());
-                                        $entity->$setter($currentPropValue);
-                                        $this->logger->err("processFields set 3");
-                                    } else {
-                                        $currentPropValue = $this->oldEncryptor->decrypt($getInformation);
-                                        $entity->$setter($currentPropValue);
-                                        $this->logger->err("processFields set 4");
-                                    }
+                                $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
                                 }
+                           
+                            $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                            
                             }
                         }
                     }
                 }
+
+            return $entity;
             }
 
             return $entity;
         }
 
-        return null;
-    }
+ 
 
     private function handleEmbeddedAnnotation($entity, $embeddedProperty, $isEncryptOperation = true)
     {
