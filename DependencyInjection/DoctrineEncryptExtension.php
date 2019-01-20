@@ -28,7 +28,7 @@ class DoctrineEncryptExtension extends Extension
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
-        $services = array('orm' => 'orm-services');
+        //$services = array('orm' => 'orm-services');
         $supportedEncryptorClasses = array('aes256' => 'Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor');
 
         if (empty($config['secret_key'])) {
@@ -47,8 +47,9 @@ class DoctrineEncryptExtension extends Extension
         $container->setParameter('studio201_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
         $container->setParameter('studio201_doctrine_encrypt.secret_key', $config['secret_key']);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
+         // Load service file
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load('services.yml');
     }
 
     /**
