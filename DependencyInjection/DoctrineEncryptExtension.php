@@ -26,25 +26,29 @@ class DoctrineEncryptExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        // Create configuration object
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
+        $services = array('orm' => 'orm-services');
+        $supportedEncryptorClasses = array('aes256' => 'Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor');
 
-        // If empty encryptor class, use Halite encryptor
-        if (in_array($config['encryptor_class'], array_keys(self::SupportedEncryptorClasses))) {
-            $config['encryptor_class_full'] = self::SupportedEncryptorClasses[$config['encryptor_class']];
-        } else {
-            $config['encryptor_class_full'] = self::SupportedEncryptorClasses['Halite'];
+        if (empty($config['secret_key'])) {
+            if ($container->hasParameter('secret')) {
+                $config['secret_key'] = $container->getParameter('secret');
+            } else {
+                throw new \RuntimeException('You must provide "secret_key" for DoctrineEncryptBundle or "secret" for framework');
+            }
         }
 
-        // Set parameters
-        $container->setParameter('studio201_doctrine_encrypt.encryptor_class_name', $config['encryptor_class_full']);
-        $container->setParameter('studio201_doctrine_encrypt.old_secret_key', $config['old_secret_key']);
-        $container->setParameter('studio201_doctrine_encrypt.secret_key_path',$config['secret_directory_path'].'/.'.$config['encryptor_class'].'.key');
+        if (!empty($config['encryptor_class'])) {
+            $encryptorFullName = $config['encryptor_class'];
+        } else {
+            $encryptorFullName = $supportedEncryptorClasses[$config['encryptor']];
+        }
+        $container->setParameter('studio201_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
+        $container->setParameter('studio201_doctrine_encrypt.secret_key', $config['secret_key']);
 
-        // Load service file
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
     }
 
     /**
