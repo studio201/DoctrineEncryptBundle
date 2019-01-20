@@ -102,7 +102,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * Initialization of encryptor
      * @param string $key
      */
-    public function __construct(string $key)
+    public function __construct($key)
     {
         $this->secretKey = $key;
     }
