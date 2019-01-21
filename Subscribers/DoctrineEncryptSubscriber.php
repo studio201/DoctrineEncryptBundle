@@ -11,7 +11,6 @@ use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use ReflectionClass;
-use ReflectionProperty;
 use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -341,19 +340,18 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                                 $name = $refProperty->getName();
                                 $this->logger->err("decrypt new ".$name.": ".$currentPropValue);
-                            } else {
+                            } /*else {
                                 try {
                                     if ($this->oldEncryptor != null) {
                                         $currentPropValue = $this->oldEncryptor->decrypt($value);
+                                        $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                        $this->logger->err("decrypt old ".$refProperty->getName().": ".$currentPropValue);
 
                                     }
                                 } catch (\Exception $ex) {
                                     $currentPropValue = $value;
                                 }
-                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                                $this->logger->err("decrypt old ".$refProperty->getName().": ".$currentPropValue);
-                                
-                            }
+                            }*/
 
                         }
                     } else {
@@ -361,12 +359,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                             if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                 $this->encryptCounter++;
                                 $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
-                                $this->logger->err("encrypt new");
+                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                $this->logger->err("encrypt new ".$refProperty->getName().": ".$currentPropValue);
                             }
-
-                            $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                            $this->logger->err("encrypt new ".$refProperty->getName().": ".$currentPropValue);
-
                         }
                     }
                 }
@@ -377,8 +372,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
         return $entity;
     }
-
- 
 
     private function handleEmbeddedAnnotation($entity, $embeddedProperty, $isEncryptOperation = true)
     {
