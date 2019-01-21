@@ -327,7 +327,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                  $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                                  $name = $refProperty->getName();
                             } 
-                            if (substr($value, -strlen(self::ENCRYPTION_MARKER_OLD)) == self::ENCRYPTION_MARKER_OLD) {
+                            elseif (substr($value, -strlen(self::ENCRYPTION_MARKER_OLD)) == self::ENCRYPTION_MARKER_OLD) {
                                 $this->decryptCounter++;
                                 $currentPropValue = $this->oldEncryptor->decrypt(substr($value, 0, -strlen(self::ENCRYPTION_MARKER_OLD)));
                                
