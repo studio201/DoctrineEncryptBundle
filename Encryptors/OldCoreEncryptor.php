@@ -83,7 +83,7 @@ class OldCoreEncryptor implements EncryptorInterface
      *                  the block size of the algorithm.
      * MCRYPT_MODE_STREAM is an extra mode to include some stream algorithms like "WAKE" or "RC4".
      */
-    const MODE = MCRYPT_MODE_CBC;
+    const MODE = "cbc";//MCRYPT_MODE_CBC;
     /**
      * @var string IV_MODE zu verwendender Initialisierungs-Vector Mode
      *
@@ -92,7 +92,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * MCRYPT_RAND (system random number generator) - Windows
      *
      */
-    const IV_MODE = MCRYPT_RAND;
+    const IV_MODE = 2;//MCRYPT_RAND;
     /**
      * Secret key for aes algorythm
      * @var string
