@@ -64,8 +64,9 @@ class OldCoreEncryptor implements EncryptorInterface
      * MCRYPT_TWOFISH256
      * MCRYPT_WAKE (libmcrypt > 2.4.x only)
      * MCRYPT_XTEA (libmcrypt > 2.4.x only)
+     * //TODO: replace after migration to php7.2
      */
-    const ALGORITYM = MCRYPT_RIJNDAEL_128;
+    const ALGORITYM = "rijndael-128";
     /**
      * @var string MODE zu verwendender CBC Mode
      *
