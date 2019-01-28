@@ -8,8 +8,6 @@
 
 namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
-use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
-
 
 /**
  * Class CoreEncryptor
@@ -177,9 +175,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getIv()
     {
-        $ivSize = mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        if (function_exists("mcrypt_get_iv_size")) {
+            $ivSize = mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
 
-        return mcrypt_create_iv($ivSize, self::IV_MODE);
+            return mcrypt_create_iv($ivSize, self::IV_MODE);
+        }
+        return null;
     }
 
     /**
@@ -194,7 +195,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getCipherText($plainText, $key, $iv)
     {
-        return mcrypt_encrypt(self::ALGORITYM, $key, $plainText, self::MODE, $iv);
+        if (function_exists("mcrypt_encrypt")) {
+            return mcrypt_encrypt(self::ALGORITYM, $key, $plainText, self::MODE, $iv);
+        }
+
+        return $plainText;
+
     }
 
     /**
@@ -248,7 +254,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getIvSize()
     {
-        return mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        if (function_exists("mcrypt_get_iv_size")) {
+            return mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        }
+
+        return null;
+
     }
 
     /**
@@ -260,6 +271,9 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getPlainText($cipherText, $key, $iv)
     {
-        return mcrypt_decrypt(self::ALGORITYM, $key, $cipherText, self::MODE, $iv);
+        if (function_exists("mcrypt_decrypt")) {
+            return mcrypt_decrypt(self::ALGORITYM, $key, $cipherText, self::MODE, $iv);
+        }
+        return $cipherText;
     }
 }

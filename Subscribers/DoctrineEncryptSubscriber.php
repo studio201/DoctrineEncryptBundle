@@ -88,6 +88,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @var
      */
     protected $entityManager;
+    
+    
+    protected $convertFromOld;
 
     /**
      * Initialization of subscriber
@@ -105,6 +108,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $this->encryptor = $encryptor;
         $this->restoreEncryptor = $this->encryptor;
         $this->secretKey = $oldSecretKey;
+        $this->convertFromOld = false;
     }
 
     /**
@@ -336,7 +340,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                             }else {
                                
                                 try {
-                                    if ($this->oldEncryptor != null) {
+                                    if ($this->convertFromOld == true && $this->oldEncryptor != null) {
                                         $currentPropValue = $this->oldEncryptor->decrypt($value);
                                         
                                     }
