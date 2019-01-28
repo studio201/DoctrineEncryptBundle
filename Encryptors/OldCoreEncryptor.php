@@ -8,6 +8,18 @@
 
 namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
+use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+
+//mcrypt fix
+if ( !defined('MCRYPT_RIJNDAEL_128') ) {
+    define('MCRYPT_RIJNDAEL_128', "rijndael-128");
+}
+if ( !defined('MCRYPT_MODE_CBC') ) {
+    define('MCRYPT_MODE_CBC', "cbc");
+}
+if ( !defined('MCRYPT_RAND') ) {
+    define('MCRYPT_RAND', 2);
+}
 
 /**
  * Class CoreEncryptor
