@@ -2,6 +2,7 @@
 
 namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
+use ParagonIE\Halite\Alerts\InvalidMessage;
 use \ParagonIE\Halite\HiddenString;
 use \ParagonIE\Halite\EncryptionKey;
 use \ParagonIE\Halite\KeyFactory;
@@ -40,7 +41,13 @@ class HaliteEncryptor implements EncryptorInterface
      */
     public function decrypt($data)
     {
-        return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
+        try{
+            return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
+        }
+        catch(InvalidMessage $e){
+            
+        }
+        return $data;
     }
 
     private function getKey()
