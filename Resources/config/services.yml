@@ -39,3 +39,7 @@ services:
             - "@doctrine.orm.entity_manager"
             - "@annotation_reader"
             - "@studio201_doctrine_encrypt.subscriber"
+
+    studio201_doctrine_encrypt.service:
+        class: Studio201\DoctrineEncryptBundle\Service\EncryptionService
+
