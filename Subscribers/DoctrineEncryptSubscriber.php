@@ -24,7 +24,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Appended to end of encrypted value
      */
     const ENCRYPTION_MARKER = '<ENCv1>';
-    
+
     const ENCRYPTION_MARKER_OLD = '<ENC>';
 
     /**
@@ -88,8 +88,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @var
      */
     protected $entityManager;
-    
-    
+
     protected $convertFromOld;
 
     /**
@@ -154,6 +153,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         if (!is_null($oldEncryptorClass)) {
             $this->oldEncryptor = $this->encryptorFactory($oldEncryptorClass, $this->secretKey);
+
             return;
         }
 
@@ -289,7 +289,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function processFields($entity, $isEncryptOperation = true)
     {
-        
+
         if (!empty($this->encryptor)) {
             // Check which operation to be used
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
@@ -311,55 +311,57 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                     $this->handleEmbeddedAnnotation($entity, $refProperty, $isEncryptOperation);
                     continue;
                 }
-                
+
                 /**
                  * If property is an normal value and contains the Encrypt tag, lets encrypt/decrypt that property
                  */
                 if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
-                    
+
                     $pac = PropertyAccess::createPropertyAccessor();
                     $value = $pac->getValue($entity, $refProperty->getName());
                     if ($encryptorMethod == 'decrypt') {
-                       
+
                         if (!is_null($value) and !empty($value)) {
                             $currentPropValue = $value;
-                           
+
                             if (substr($value, -strlen(self::ENCRYPTION_MARKER)) == self::ENCRYPTION_MARKER) {
                                 $this->decryptCounter++;
                                 $currentPropValue = $this->encryptor->decrypt(substr($value, 0, -strlen(self::ENCRYPTION_MARKER)));
-                               
-                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                                 $name = $refProperty->getName();
-                            } 
-                            elseif (substr($value, -strlen(self::ENCRYPTION_MARKER_OLD)) == self::ENCRYPTION_MARKER_OLD) {
+
+                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                $name = $refProperty->getName();
+                            } elseif (substr($value, -strlen(self::ENCRYPTION_MARKER_OLD)) == self::ENCRYPTION_MARKER_OLD) {
                                 $this->decryptCounter++;
                                 $currentPropValue = $this->oldEncryptor->decrypt(substr($value, 0, -strlen(self::ENCRYPTION_MARKER_OLD)));
-                               
-                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                                 $name = $refProperty->getName();
-                            }else {
-                               
+
+                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                $name = $refProperty->getName();
+                            } else {
+
                                 try {
                                     if ($this->convertFromOld == true && $this->oldEncryptor != null) {
                                         $currentPropValue = $this->oldEncryptor->decrypt($value);
-                                        
+
                                     }
                                 } catch (\Exception $ex) {
                                     $currentPropValue = $value;
                                 }
-                                 $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
+                                $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                             }
-                           
+
                         }
                     } else {
                         if (!is_null($value) and !empty($value)) {
                             if (substr($value, -strlen(self::ENCRYPTION_MARKER)) != self::ENCRYPTION_MARKER) {
                                 $this->encryptCounter++;
                                 $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
-                             }
-                           
+
+                            } else {
+                              $currentPropValue = $value;
+                            }
                             $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
-                            
+
+
                         }
                     }
                 }
@@ -426,9 +428,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
         $refClass = new \ReflectionClass($classFullName);
         //if ($refClass->implementsInterface(self::ENCRYPTOR_INTERFACE_NS)) {
-            return new $classFullName($secretKey);
+        return new $classFullName($secretKey);
         //} else {
         //    throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
-       // }
+        // }
     }
 }
