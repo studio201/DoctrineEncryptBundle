@@ -2,6 +2,7 @@
 
 namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
+use ParagonIE\Halite\Alerts\InvalidMessage;
 use \ParagonIE\Halite\HiddenString;
 use \ParagonIE\Halite\EncryptionKey;
 use \ParagonIE\Halite\KeyFactory;
@@ -13,7 +14,7 @@ use \ParagonIE\Halite\Symmetric\Crypto;
  * @author Michael de Groot <specamps@gmail.com>
  */
 
-class HaliteEncryptor implements EncryptorInterface
+class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
 {
     private $encryptionKey;
     private $keyFile;
@@ -35,13 +36,44 @@ class HaliteEncryptor implements EncryptorInterface
         return \ParagonIE\Halite\Symmetric\Crypto::encrypt(new HiddenString($data), $this->getKey());
     }
 
+
     /**
      * {@inheritdoc}
      */
     public function decrypt($data)
     {
-        return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
+        try{
+            return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
+        }
+        catch(InvalidMessage $e){
+            
+        }
+        return $data;
     }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function encryptFile($inputFile, $outputFile)
+    {
+        return \ParagonIE\Halite\File::encrypt($inputFile, $outputFile, $this->getKey());
+    }
+
+     /**
+     * Example USAGE
+       $this->getEncryptorService()->decryptFile($encryptedFilePath, $decryptedFilePath);
+        $response = new BinaryFileResponse($decryptedFilePath);
+        $response->deleteFileAfterSend(true);  // important, delete decryptedFile after sending
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $document->getName());
+        return $response;
+     */
+    public function decryptFile($inputFile, $outputFile)
+    {
+        return \ParagonIE\Halite\File::decrypt($inputFile, $outputFile, $this->getKey());
+    }
+
+
 
     private function getKey()
     {

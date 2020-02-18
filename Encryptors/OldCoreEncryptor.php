@@ -10,6 +10,16 @@ namespace Studio201\DoctrineEncryptBundle\Encryptors;
 
 use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 
+//mcrypt fix
+if ( !defined('MCRYPT_RIJNDAEL_128') ) {
+    define('MCRYPT_RIJNDAEL_128', "rijndael-128");
+}
+if ( !defined('MCRYPT_MODE_CBC') ) {
+    define('MCRYPT_MODE_CBC', "cbc");
+}
+if ( !defined('MCRYPT_RAND') ) {
+    define('MCRYPT_RAND', 2);
+}
 
 /**
  * Class CoreEncryptor
@@ -64,8 +74,9 @@ class OldCoreEncryptor implements EncryptorInterface
      * MCRYPT_TWOFISH256
      * MCRYPT_WAKE (libmcrypt > 2.4.x only)
      * MCRYPT_XTEA (libmcrypt > 2.4.x only)
+     * //TODO: replace after migration to php7.2
      */
-    const ALGORITYM = MCRYPT_RIJNDAEL_128;
+    const ALGORITYM = "rijndael-128";
     /**
      * @var string MODE zu verwendender CBC Mode
      *
@@ -82,7 +93,7 @@ class OldCoreEncryptor implements EncryptorInterface
      *                  the block size of the algorithm.
      * MCRYPT_MODE_STREAM is an extra mode to include some stream algorithms like "WAKE" or "RC4".
      */
-    const MODE = MCRYPT_MODE_CBC;
+    const MODE = "cbc";//MCRYPT_MODE_CBC;
     /**
      * @var string IV_MODE zu verwendender Initialisierungs-Vector Mode
      *
@@ -91,7 +102,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * MCRYPT_RAND (system random number generator) - Windows
      *
      */
-    const IV_MODE = MCRYPT_RAND;
+    const IV_MODE = 2;//MCRYPT_RAND;
     /**
      * Secret key for aes algorythm
      * @var string
@@ -176,9 +187,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getIv()
     {
-        $ivSize = mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        if (function_exists("mcrypt_get_iv_size")) {
+            $ivSize = mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
 
-        return mcrypt_create_iv($ivSize, self::IV_MODE);
+            return mcrypt_create_iv($ivSize, self::IV_MODE);
+        }
+        return null;
     }
 
     /**
@@ -193,7 +207,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getCipherText($plainText, $key, $iv)
     {
-        return mcrypt_encrypt(self::ALGORITYM, $key, $plainText, self::MODE, $iv);
+        if (function_exists("mcrypt_encrypt")) {
+            return mcrypt_encrypt(self::ALGORITYM, $key, $plainText, self::MODE, $iv);
+        }
+
+        return $plainText;
+
     }
 
     /**
@@ -247,7 +266,12 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getIvSize()
     {
-        return mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        if (function_exists("mcrypt_get_iv_size")) {
+            return mcrypt_get_iv_size(self::ALGORITYM, self::MODE);
+        }
+
+        return null;
+
     }
 
     /**
@@ -259,6 +283,9 @@ class OldCoreEncryptor implements EncryptorInterface
      */
     private static function getPlainText($cipherText, $key, $iv)
     {
-        return mcrypt_decrypt(self::ALGORITYM, $key, $cipherText, self::MODE, $iv);
+        if (function_exists("mcrypt_decrypt")) {
+            return mcrypt_decrypt(self::ALGORITYM, $key, $cipherText, self::MODE, $iv);
+        }
+        return $cipherText;
     }
 }
