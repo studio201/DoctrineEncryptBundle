@@ -9,10 +9,10 @@
         "paragonie/halite": "^1.6",
         "paragonie/sodium_compat": "^1.5",
         "doctrine/orm": "^2.5",
-        "symfony/property-access": "^3.3",
-        "symfony/dependency-injection": "^3.3",
-        "symfony/http-kernel": "^3.3",
-        "symfony/config": "^3.3"
+        "symfony/property-access": "^3.3|^4.4",
+        "symfony/dependency-injection": "^3.3|^4.4",
+        "symfony/http-kernel": "^3.3|^4.4",
+        "symfony/config": "^3.3|^4.4"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5"
@@ -25,7 +25,7 @@
     },
     "target-dir": "Studio201/DoctrineEncryptBundle",
     "authors": [
-        {   
+        {
             "name": "Thomas Krahmer",
             "email": "tk@studio201.de"
         }
