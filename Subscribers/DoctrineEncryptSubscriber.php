@@ -428,7 +428,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                 return true;
             }
 
-            $oldValue = $this->encryptor->decrypt(substr($originalData[$refProperty->getName()], 0, -5));
+            $oldValue = $this->encryptor->decrypt(substr($originalData[$refProperty->getName()], 0, -strlen(self::ENCRYPTION_MARKER)));
             if($oldValue instanceof HiddenString){
                 $oldValue=$oldValue->getString();
             }
@@ -448,7 +448,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             $newValue = $newEntityValue;
         } else {
             try{
-                $newValue = $this->encryptor->decrypt(substr($newEntityValue, 0, -5));
+                $newValue = $this->encryptor->decrypt(substr($newEntityValue, 0, -strlen(self::ENCRYPTION_MARKER)));
             } catch (HaliteAlert $e){
                 $newValue = $newEntityValue;
             } catch (\TypeError $e) {
@@ -457,7 +457,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                 $newValue = $newEntityValue;
             }*/
         }
-
         return $newValue != $oldValue;
     }
 
