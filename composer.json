@@ -6,7 +6,7 @@
     "description": "Encrypted symfony entity's by verified and standardized libraries",
     "require": {
         "php": ">=5.6",
-        "paragonie/halite": "^1.6",
+        "paragonie/halite": "^2",
         "paragonie/sodium_compat": "^1.5",
         "doctrine/orm": "^2.5",
         "symfony/property-access": "^3.3",
@@ -25,7 +25,7 @@
     },
     "target-dir": "Studio201/DoctrineEncryptBundle",
     "authors": [
-        {   
+        {
             "name": "Thomas Krahmer",
             "email": "tk@studio201.de"
         }
