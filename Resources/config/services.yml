@@ -43,3 +43,9 @@ services:
     studio201_doctrine_encrypt.service:
         class: Studio201\DoctrineEncryptBundle\Service\EncryptionService
 
+    studio201_doctrine_encrypt.crypter:
+        class: Studio201\DoctrineEncryptBundle\EventListener\Crypter
+        arguments:
+            - '@studio201_doctrine_encrypt.encryptor'
+        tags:
+            - {name: doctrine.event_listener, event: crypter}

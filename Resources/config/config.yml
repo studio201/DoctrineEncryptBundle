@@ -1,0 +1,4 @@
+doctrine:
+    dbal:
+        types:
+            encrypted: Studio201\DoctrineEncryptBundle\Doctrine\Types\EncryptedType

@@ -382,7 +382,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
                                     //Revert to original encrypted value if both unencrypted values are the same
                                     $pac->setValue($entity, $refProperty->getName(), $originalData[$refProperty->getName()]);
-                            } else {
+                                } else {
                                     $this->encryptCounter++;
                                     $currentPropValue = $this->encryptor->encrypt($value).self::ENCRYPTION_MARKER;
                                     $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
@@ -415,11 +415,14 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     private function hasEncryptedFieldsChanged($unitOfWork, $entity, ReflectionProperty $refProperty)
     {
+        if ($unitOfWork == null) {
+            return true;
+        }
         $originalData = $unitOfWork->getOriginalEntityData($entity);
 
         //Get old value
-        try{
-            if(!isset($originalData[$refProperty->getName()])) {
+        try {
+            if (!isset($originalData[$refProperty->getName()])) {
                 return true;
             }
 
@@ -429,13 +432,13 @@ class DoctrineEncryptSubscriber implements EventSubscriber
             }
 
             $oldValue = $this->encryptor->decrypt(substr($originalData[$refProperty->getName()], 0, -strlen(self::ENCRYPTION_MARKER)));
-            if($oldValue instanceof HiddenString){
-                $oldValue=$oldValue->getString();
+            if ($oldValue instanceof HiddenString) {
+                $oldValue = $oldValue->getString();
             }
-        } catch (HaliteAlert $e){
-            $oldValue=$originalData[$refProperty->getName()];
+        } catch (HaliteAlert $e) {
+            $oldValue = $originalData[$refProperty->getName()];
         } catch (\TypeError $e) {
-            $oldValue=$originalData[$refProperty->getName()];
+            $oldValue = $originalData[$refProperty->getName()];
         } /*catch (CryptoException $e ){
             $oldValue=$originalData[$refProperty->getName()];
         }*/
@@ -447,9 +450,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         if (substr($newEntityValue, -strlen(self::ENCRYPTION_MARKER)) !== self::ENCRYPTION_MARKER) {
             $newValue = $newEntityValue;
         } else {
-            try{
+            try {
                 $newValue = $this->encryptor->decrypt(substr($newEntityValue, 0, -strlen(self::ENCRYPTION_MARKER)));
-            } catch (HaliteAlert $e){
+            } catch (HaliteAlert $e) {
                 $newValue = $newEntityValue;
             } catch (\TypeError $e) {
                 $newValue = $newEntityValue;
@@ -457,9 +460,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                 $newValue = $newEntityValue;
             }*/
         }
+
         return $newValue != $oldValue;
     }
-
 
     /**
      * @param $entity
@@ -520,6 +523,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     private function encryptorFactory($classFullName, $secretKey)
     {
         $refClass = new \ReflectionClass($classFullName);
+
         //if ($refClass->implementsInterface(self::ENCRYPTOR_INTERFACE_NS)) {
         return new $classFullName($secretKey);
         //} else {
