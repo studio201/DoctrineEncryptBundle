@@ -10,6 +10,7 @@ namespace Studio201\DoctrineEncryptBundle\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use Studio201\DoctrineEncryptBundle\EventListener\Crypter;
 use Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
