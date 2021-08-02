@@ -5,12 +5,13 @@
  * Date:    24.06.2021
  * Time:    13:39
  */
+
 namespace Studio201\DoctrineEncryptBundle\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Studio201\DoctrineEncryptBundle\EventListener\Crypter;
 use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use Studio201\DoctrineEncryptBundle\EventListener\Crypter;
 use Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber;
 
 /**
@@ -58,8 +59,11 @@ class EncryptedType extends Type
         }
 
         $crypter = $this->getCrypter($platform);
+        if ($value == null) {
+            return '';
+        }
 
-        return $crypter->encrypt($value) . DoctrineEncryptSubscriber::ENCRYPTION_MARKER;
+        return $crypter->encrypt($value).DoctrineEncryptSubscriber::ENCRYPTION_MARKER;
     }
 
     /**
@@ -83,6 +87,7 @@ class EncryptedType extends Type
      */
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
+        $fieldDeclaration["type"] = Types::TEXT;
         return $platform->getClobTypeDeclarationSQL($fieldDeclaration);
     }
 }
