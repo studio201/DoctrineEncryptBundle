@@ -42,6 +42,9 @@ class EncryptionService extends BasisController
      */
     public function signMessage($secretKey, $message)
     {
+        if (is_string($secretKey)) {
+            $secretKey = new HiddenString($secretKey);
+        }
         $importedSecretKey = KeyFactory::importSignatureSecretKey($secretKey);
 
         return Crypto::sign($message, $importedSecretKey);
