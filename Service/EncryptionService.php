@@ -9,6 +9,7 @@
 namespace Studio201\DoctrineEncryptBundle\Service;
 
 use ParagonIE\Halite\Asymmetric\Crypto;
+use ParagonIE\Halite\HiddenString;
 use ParagonIE\Halite\KeyFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller as BasisController;
 
