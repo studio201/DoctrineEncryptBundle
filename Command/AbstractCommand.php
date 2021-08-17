@@ -38,7 +38,7 @@ abstract class AbstractCommand extends Command
      * @param DoctrineEncryptSubscriber $subscriber
      */
     public function __construct(
-        EntityManager $entityManager,
+        EntityManagerInterface $entityManager,
         Reader $annotationReader,
         DoctrineEncryptSubscriber $subscriber
     ) {
