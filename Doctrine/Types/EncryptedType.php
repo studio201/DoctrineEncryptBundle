@@ -38,11 +38,11 @@ class EncryptedType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform): string
     {
-        if ($value === '') {
+        if (null == $value || $value === '') {
             return '';
         }
 
-        $value = substr($value, 0, -strlen(DoctrineEncryptSubscriber::ENCRYPTION_MARKER));
+        $value = strpos($value, DoctrineEncryptSubscriber::ENCRYPTION_MARKER) > 0 ? substr($value, 0, -strlen(DoctrineEncryptSubscriber::ENCRYPTION_MARKER)) : $value;
         $crypter = $this->getCrypter($platform);
 
         return $crypter->decrypt($value);
@@ -55,14 +55,11 @@ class EncryptedType extends Type
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        if ($value === '') {
+        if (null == $value || $value === '') {
             return '';
         }
 
         $crypter = $this->getCrypter($platform);
-        if ($value == null) {
-            return '';
-        }
 
         return $crypter->encrypt($value).DoctrineEncryptSubscriber::ENCRYPTION_MARKER;
     }

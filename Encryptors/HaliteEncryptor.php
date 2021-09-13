@@ -42,11 +42,14 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
      */
     public function decrypt($data)
     {
+        if(null == $data) {
+            return $data;
+        }
         try{
             return \ParagonIE\Halite\Symmetric\Crypto::decrypt($data, $this->getKey());
         }
         catch(InvalidMessage $e){
-            
+
         }
         return $data;
     }
