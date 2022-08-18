@@ -18,7 +18,7 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
 {
     private $encryptionKey;
     private $keyFile;
-
+    const ENCRYPTION_MARKER = '<ENCv1>';
     /**
      * {@inheritdoc}
      */
@@ -26,7 +26,7 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
     {
         $this->encryptionKey = null;
         $this->keyFile = $keyFile;
-    }
+     }
 
     /**
      * {@inheritdoc}
@@ -80,6 +80,7 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
 
     private function getKey()
     {
+
         if ($this->encryptionKey === null) {
             try {
                 $this->encryptionKey = \ParagonIE\Halite\KeyFactory::loadEncryptionKey($this->keyFile);

@@ -41,11 +41,16 @@ class EncryptedType extends Type
         if (null == $value || $value === '') {
             return '';
         }
-
-        $value = strpos($value, DoctrineEncryptSubscriber::ENCRYPTION_MARKER) > 0 ? substr($value, 0, -strlen(DoctrineEncryptSubscriber::ENCRYPTION_MARKER)) : $value;
         $crypter = $this->getCrypter($platform);
+        if(strpos($value, $crypter::ENCRYPTION_MARKER) > 0){
+            $value =   substr($value, 0, -strlen($crypter::ENCRYPTION_MARKER));
+            return $crypter->decrypt($value);
+        }
+        else{
+            return $value;
+        }
 
-        return $crypter->decrypt($value);
+
     }
 
     /**
@@ -61,7 +66,7 @@ class EncryptedType extends Type
 
         $crypter = $this->getCrypter($platform);
 
-        return $crypter->encrypt($value).DoctrineEncryptSubscriber::ENCRYPTION_MARKER;
+        return $crypter->encrypt($value).$crypter::ENCRYPTION_MARKER;
     }
 
     /**

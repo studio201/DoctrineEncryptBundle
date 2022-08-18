@@ -19,6 +19,7 @@ class DoctrineEncryptExtension extends Extension
     const SupportedEncryptorClasses = array(
         'Defuse' => 'Studio201\DoctrineEncryptBundle\Encryptors\DefuseEncryptor',
         'Halite' => 'Studio201\DoctrineEncryptBundle\Encryptors\HaliteEncryptor',
+        'OpenSSL' => 'Studio201\DoctrineEncryptBundle\Encryptors\OpenSSLEncryptor',
     );
 
     /**

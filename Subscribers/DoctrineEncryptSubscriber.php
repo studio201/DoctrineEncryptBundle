@@ -27,9 +27,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Appended to end of encrypted value
      */
-    const ENCRYPTION_MARKER = '<ENCv1>';
+    const ENCRYPTION_MARKER = '<ENCv2>';
 
-    const ENCRYPTION_MARKER_OLD = '<ENC>';
+    const ENCRYPTION_MARKER_OLD = '<ENCv1>';
 
     /**
      * Encryptor interface namespace
@@ -162,13 +162,13 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function setOldEncryptor($oldEncryptorClass)
     {
-        if (!is_null($oldEncryptorClass)) {
+        if (!is_null($oldEncryptorClass) && ($oldEncryptorClass instanceof EncryptorInterface) == false) {
             $this->oldEncryptor = $this->encryptorFactory($oldEncryptorClass, $this->secretKey);
 
             return;
         }
 
-        $this->oldEncryptor = null;
+        $this->oldEncryptor = $oldEncryptorClass;
     }
 
     /**

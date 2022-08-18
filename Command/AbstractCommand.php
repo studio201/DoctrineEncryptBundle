@@ -120,6 +120,14 @@ abstract class AbstractCommand extends Command
             if ($this->annotationReader->getPropertyAnnotation($property, 'Studio201\DoctrineEncryptBundle\Configuration\Encrypted')) {
                 $properties[] = $property;
             }
+            if ($this->annotationReader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column')) {
+                $annotation = $this->annotationReader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column');
+                if($annotation->type == "encrypted"){
+                    $properties[] = $property;
+                }
+
+            }
+
         }
 
         return $properties;
