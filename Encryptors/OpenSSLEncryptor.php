@@ -51,7 +51,8 @@ class OpenSSLEncryptor implements EncryptorInterface
         if($this->keyFile == null || $this->keyFile==""){
             throwException("Keyfile not set");
         }
-        if ($this->password === null) {
+
+        if (empty($this->password)) {
 
             if(file_exists($this->keyFile) == false){
                 $bytes = openssl_random_pseudo_bytes(32);
