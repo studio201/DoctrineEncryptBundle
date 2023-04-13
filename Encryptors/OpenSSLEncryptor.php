@@ -46,6 +46,25 @@ class OpenSSLEncryptor implements EncryptorInterface
         return openssl_decrypt($data, self::METHOD, $this->password, self::OPTIONS, $this->iv);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function encryptFile($inputFile, $outputFile)
+    {
+
+        return file_put_contents($outputFile, $this->encrypt(file_get_contents($inputFile)));
+    }
+
+    /**
+     * @param $inputFile
+     * @param $outputFile
+     * @return bool
+     */
+    public function decryptFile($inputFile, $outputFile)
+    {
+        return file_put_contents($outputFile, $this->decrypt(file_get_contents($inputFile)));
+    }
+
     private function getKey()
     {
         if($this->keyFile == null || $this->keyFile==""){
