@@ -22,8 +22,8 @@ class Configuration implements ConfigurationInterface
     {
 
         // Create tree builder
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('studio201_doctrine_encrypt');
+        $treeBuilder = new TreeBuilder('studio201_doctrine_encrypt');
+        $rootNode = $treeBuilder->getRootNode();
 
         // Grammar of config tree
         $rootNode
