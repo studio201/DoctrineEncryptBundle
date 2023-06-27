@@ -29,7 +29,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
             ->scalarNode('encryptor_class')
-            ->defaultValue('Halite')
+            ->defaultValue('OpenSSL')
             ->end()
             ->scalarNode('secret_directory_path')
             ->defaultValue('%kernel.project_dir%')
