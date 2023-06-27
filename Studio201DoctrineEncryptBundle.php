@@ -16,7 +16,7 @@ class Studio201DoctrineEncryptBundle extends Bundle
         $container->addCompilerPass(new RegisterServiceCompilerPass(), PassConfig::TYPE_AFTER_REMOVING);
     }
 
-    public function getContainerExtension()
+    public function getContainerExtension(): ?Symfony\Component\DependencyInjection\Extension\ExtensionInterface
     {
         return new DoctrineEncryptExtension();
     }
