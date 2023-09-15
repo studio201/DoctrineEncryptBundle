@@ -199,7 +199,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     public function postUpdate(LifecycleEventArgs $args)
     {
 
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->processFields($entity, false);
 
     }
@@ -212,7 +212,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function preUpdate(PreUpdateEventArgs $args)
     {
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->processFields($entity);
     }
 
@@ -223,7 +223,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     public function prePersist(LifecycleEventArgs $args)
     {
 
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->processFields($entity);
     }
 
@@ -237,7 +237,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     {
 
         //Get entity and process fields
-        $entity = $args->getEntity();
+        $entity = $args->getObject();
         $this->processFields($entity, false);
 
     }
