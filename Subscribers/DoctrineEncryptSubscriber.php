@@ -250,7 +250,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function preFlush(PreFlushEventArgs $preFlushEventArgs)
     {
-        $unitOfWork = $preFlushEventArgs->getEntityManager()->getUnitOfWork();
+        $unitOfWork = $preFlushEventArgs->getObjectManager()->getUnitOfWork();
         foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
             $this->processFields($entity);
         }
@@ -269,7 +269,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     public function postFlush(PostFlushEventArgs $postFlushEventArgs)
     {
-        $unitOfWork = $postFlushEventArgs->getEntityManager()->getUnitOfWork();
+        $unitOfWork = $postFlushEventArgs->getObjectManager()->getUnitOfWork();
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {
             foreach ($entityMap as $entity) {
                 $this->processFields($entity, false);
