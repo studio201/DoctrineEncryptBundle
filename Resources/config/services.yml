@@ -1,15 +1,15 @@
 services:
-    studio201_doctrine_encrypt.orm_subscriber:
-        class: Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
-        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor", "%studio201_doctrine_encrypt.old_secret_key%"]
-        tags:
-            -  { name: doctrine.event_subscriber }
-        calls:
-            - [ setLogger, [ '@logger' ] ]
-            - [ setEntityManager, [ '@doctrine.orm.entity_manager' ] ]
-            - [ setOldEncryptor, [ 'Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor'] ]
-    studio201_doctrine_encrypt.subscriber:
-        alias: studio201_doctrine_encrypt.orm_subscriber
+#    studio201_doctrine_encrypt.orm_subscriber:
+#        class: Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
+#        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor", "%studio201_doctrine_encrypt.old_secret_key%"]
+#        tags:
+#            -  { name: doctrine.event_subscriber }
+#        calls:
+#            - [ setLogger, [ '@logger' ] ]
+#            - [ setEntityManager, [ '@doctrine.orm.entity_manager' ] ]
+#            - [ setOldEncryptor, [ 'Studio201\DoctrineEncryptBundle\Encryptors\OldCoreEncryptor'] ]
+#    studio201_doctrine_encrypt.subscriber:
+#        alias: studio201_doctrine_encrypt.orm_subscriber
 
     studio201_doctrine_encrypt.encryptor:
         class: "%studio201_doctrine_encrypt.encryptor_class_name%"
@@ -19,26 +19,16 @@ services:
     studio201_doctrine_encrypt.command.decrypt.database:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineDecryptDatabaseCommand
         tags: ['console.command']
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
-            - "@studio201_doctrine_encrypt.subscriber"
+
 
     studio201_doctrine_encrypt.command.encrypt.database:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptDatabaseCommand
         tags: ['console.command']
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
-            - "@studio201_doctrine_encrypt.subscriber"
+
 
     studio201_doctrine_encrypt.command.encrypt.status:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptStatusCommand
         tags: ['console.command']
-        arguments:
-            - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
-            - "@studio201_doctrine_encrypt.subscriber"
 
     studio201_doctrine_encrypt.service:
         class: Studio201\DoctrineEncryptBundle\Service\EncryptionService

@@ -19,6 +19,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class DoctrineDecryptDatabaseCommand extends AbstractCommand
 {
+
     /**
      * {@inheritdoc}
      */

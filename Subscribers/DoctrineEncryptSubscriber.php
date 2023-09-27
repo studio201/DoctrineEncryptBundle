@@ -22,6 +22,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
  */
+#[AsDoctrineListener]
 class DoctrineEncryptSubscriber implements EventSubscriber
 {
     /**
