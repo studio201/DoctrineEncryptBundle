@@ -43,21 +43,18 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
     /**
      * Encryptor
-     * @var EncryptorInterface
      */
-    private $encryptor;
+    private \Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface|null|string $encryptor = null;
 
     /**
      * Encryptor
-     * @var EncryptorInterface
      */
-    private $oldEncryptor;
+    private ?\Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface $oldEncryptor = null;
 
     /**
      * Annotation reader
-     * @var \Doctrine\Common\Annotations\Reader
      */
-    private $annReader;
+    private \Doctrine\Common\Annotations\Reader $annReader;
 
     /**
      * Secret key
@@ -69,13 +66,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Used for restoring the encryptor after changing it
      * @var string
      */
-    private $restoreEncryptor;
+    private \Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface $restoreEncryptor;
 
     /**
      * User for storing all entities we decrypted after flushing, so we know which ones to re-encrypt
-     * @var ArrayCollection
      */
-    private $decryptedEntities;
+    private \Doctrine\Common\Collections\ArrayCollection $decryptedEntities;
 
     /**
      * Count amount of decrypted values in this service
@@ -99,7 +95,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      */
     protected $entityManager;
 
-    protected $convertFromOld;
+    protected bool $convertFromOld = false;
 
     /**
      * Initialization of subscriber
@@ -117,7 +113,6 @@ class DoctrineEncryptSubscriber implements EventSubscriber
         $this->encryptor = $encryptor;
         $this->restoreEncryptor = $this->encryptor;
         $this->secretKey = $oldSecretKey;
-        $this->convertFromOld = false;
         $this->decryptedEntities = new ArrayCollection();
     }
 
@@ -136,7 +131,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @param [type] $[name] [<description>]
      * @param EncryptorInterface $encryptorClass
      */
-    public function setEncryptor(EncryptorInterface $encryptorClass = null)
+    public function setEncryptor(EncryptorInterface $encryptorClass = null): void
     {
         $this->encryptor = $encryptorClass;
     }
@@ -144,7 +139,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * Restore encryptor set in config
      */
-    public function restoreEncryptor()
+    public function restoreEncryptor(): void
     {
         $this->encryptor = $this->restoreEncryptor;
     }
@@ -160,7 +155,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @param EncryptorInterface $oldEncryptorClass
      */
-    public function setOldEncryptor($oldEncryptorClass)
+    public function setOldEncryptor($oldEncryptorClass): void
     {
         if (!is_null($oldEncryptorClass) && ($oldEncryptorClass instanceof EncryptorInterface) == false) {
             $this->oldEncryptor = $this->encryptorFactory($oldEncryptorClass, $this->secretKey);
@@ -174,7 +169,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @param mixed $logger
      */
-    public function setLogger($logger)
+    public function setLogger($logger): void
     {
         $this->logger = $logger;
     }
@@ -182,7 +177,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     /**
      * @param mixed $entityManager
      */
-    public function setEntityManager($entityManager)
+    public function setEntityManager($entityManager): void
     {
         $this->entityManager = $entityManager;
     }
@@ -196,7 +191,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param LifecycleEventArgs $args
      */
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(LifecycleEventArgs $args): void
     {
 
         $entity = $args->getObject();
@@ -210,7 +205,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param PreUpdateEventArgs $args
      */
-    public function preUpdate(PreUpdateEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         $entity = $args->getObject();
         $this->processFields($entity);
@@ -220,7 +215,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * Listen a prePersist lifecycle event.
      * @param LifecycleEventArgs $args
      */
-    public function prePersist(LifecycleEventArgs $args)
+    public function prePersist(LifecycleEventArgs $args): void
     {
 
         $entity = $args->getObject();
@@ -233,7 +228,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param LifecycleEventArgs $args
      */
-    public function postLoad(LifecycleEventArgs $args)
+    public function postLoad(LifecycleEventArgs $args): void
     {
 
         //Get entity and process fields
@@ -248,7 +243,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param PreFlushEventArgs $preFlushEventArgs
      */
-    public function preFlush(PreFlushEventArgs $preFlushEventArgs)
+    public function preFlush(PreFlushEventArgs $preFlushEventArgs): void
     {
         $unitOfWork = $preFlushEventArgs->getObjectManager()->getUnitOfWork();
         foreach ($unitOfWork->getScheduledEntityInsertions() as $entity) {
@@ -267,7 +262,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @param PostFlushEventArgs $postFlushEventArgs
      */
-    public function postFlush(PostFlushEventArgs $postFlushEventArgs)
+    public function postFlush(PostFlushEventArgs $postFlushEventArgs): void
     {
         $unitOfWork = $postFlushEventArgs->getObjectManager()->getUnitOfWork();
         foreach ($unitOfWork->getIdentityMap() as $entityMap) {
@@ -282,7 +277,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * @return array Return all events which this subscriber is listening
      */
-    public function getSubscribedEvents()
+    public function getSubscribedEvents(): array
     {
         return array(
             Events::postUpdate,
@@ -307,7 +302,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
     public function processFields($entity, $isEncryptOperation = true, $unitOfWork = null)
     {
 
-        if (!empty($this->encryptor)) {
+        if ($this->encryptor instanceof \Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface) {
             // Check which operation to be used
             $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
 
@@ -413,7 +408,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @param ReflectionProperty $refProperty
      * @return bool
      */
-    private function hasEncryptedFieldsChanged($unitOfWork, $entity, ReflectionProperty $refProperty)
+    private function hasEncryptedFieldsChanged($unitOfWork, object|array $entity, ReflectionProperty $refProperty): bool
     {
         if ($unitOfWork == null) {
             return true;
@@ -469,7 +464,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      * @param ReflectionProperty $embeddedProperty
      * @param bool $isEncryptOperation
      */
-    private function handleEmbeddedAnnotation($entity, ReflectionProperty $embeddedProperty, $isEncryptOperation = true)
+    private function handleEmbeddedAnnotation(object|array $entity, ReflectionProperty $embeddedProperty, $isEncryptOperation = true): void
     {
         $propName = $embeddedProperty->getName();
 

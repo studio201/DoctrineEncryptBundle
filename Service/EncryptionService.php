@@ -21,10 +21,10 @@ class EncryptionService extends BasisController
 {
 
     /**
-     * @return \ParagonIE\Halite\EncryptionKeyPair
+     * @return array{publicKey: \ParagonIE\HiddenString\HiddenString, privateKey: \ParagonIE\HiddenString\HiddenString}
      * @throws \ParagonIE\Halite\Alerts\InvalidKey
      */
-    public function generateSignatureKeyPair()
+    public function generateSignatureKeyPair(): array
     {
         $seal_keypair = KeyFactory::generateSignatureKeyPair();
 
@@ -41,7 +41,7 @@ class EncryptionService extends BasisController
      * @throws \ParagonIE\Halite\Alerts\InvalidKey
      * @throws \ParagonIE\Halite\Alerts\InvalidType
      */
-    public function signMessage($secretKey, $message)
+    public function signMessage($secretKey, string $message): string
     {
         if (is_string($secretKey)) {
             $secretKey = new HiddenString($secretKey);
@@ -59,7 +59,7 @@ class EncryptionService extends BasisController
      * @throws \ParagonIE\Halite\Alerts\InvalidSignature
      * @throws \ParagonIE\Halite\Alerts\InvalidType
      */
-    public function verifyMessage($publicKey, $message, $signature)
+    public function verifyMessage(\ParagonIE\HiddenString\HiddenString $publicKey, string $message, string $signature): bool
     {
         $importedPublicKey = KeyFactory::importSignaturePublicKey($publicKey);
 

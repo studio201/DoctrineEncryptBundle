@@ -16,22 +16,21 @@ use \ParagonIE\Halite\Symmetric\Crypto;
 
 class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
 {
-    private $encryptionKey;
-    private $keyFile;
+    private $encryptionKey = null;
+    private string $keyFile;
     const ENCRYPTION_MARKER = '<ENCv1>';
     /**
      * {@inheritdoc}
      */
     public function __construct(string $keyFile)
     {
-        $this->encryptionKey = null;
         $this->keyFile = $keyFile;
      }
 
     /**
      * {@inheritdoc}
      */
-    public function encrypt($data)
+    public function encrypt($data): string
     {
         return \ParagonIE\Halite\Symmetric\Crypto::encrypt(new HiddenString($data), $this->getKey());
     }
@@ -58,7 +57,7 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
     /**
      * {@inheritdoc}
      */
-    public function encryptFile($inputFile, $outputFile)
+    public function encryptFile($inputFile, $outputFile): int
     {
         return \ParagonIE\Halite\File::encrypt($inputFile, $outputFile, $this->getKey());
     }
@@ -71,7 +70,7 @@ class HaliteEncryptor implements EncryptorInterface, EncryptorFileInterface
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $document->getName());
         return $response;
      */
-    public function decryptFile($inputFile, $outputFile)
+    public function decryptFile($inputFile, $outputFile): bool
     {
         return \ParagonIE\Halite\File::decrypt($inputFile, $outputFile, $this->getKey());
     }

@@ -13,16 +13,15 @@ use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 class DefuseEncryptor implements EncryptorInterface
 {
-    private $fs;
-    private $encryptionKey;
-    private $keyFile;
+    private \Symfony\Component\Filesystem\Filesystem $fs;
+    private $encryptionKey = null;
+    private string $keyFile;
 
     /**
      * {@inheritdoc}
      */
     public function __construct(string $keyFile)
     {
-        $this->encryptionKey = null;
         $this->keyFile       = $keyFile;
         $this->fs            = new Filesystem();
     }

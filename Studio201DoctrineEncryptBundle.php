@@ -11,7 +11,7 @@ use Studio201\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterService
 
 class Studio201DoctrineEncryptBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         parent::build($container);
         $container->addCompilerPass(new RegisterServiceCompilerPass(), PassConfig::TYPE_AFTER_REMOVING);

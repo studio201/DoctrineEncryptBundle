@@ -3,6 +3,7 @@
 namespace Studio201\DoctrineEncryptBundle\Command;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -17,7 +18,7 @@ class DoctrineEncryptStatusCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:encrypt:status')
@@ -27,7 +28,7 @@ class DoctrineEncryptStatusCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $metaDataArray = $this->entityManager->getMetadataFactory()->getAllMetadata();
 
@@ -53,5 +54,6 @@ class DoctrineEncryptStatusCommand extends AbstractCommand
 
         $output->writeln('');
         $output->writeln(sprintf('<info>%d</info> entities found which are containing <info>%d</info> encrypted properties.', count($metaDataArray), $totalCount));
+        return Command::SUCCESS;
     }
 }

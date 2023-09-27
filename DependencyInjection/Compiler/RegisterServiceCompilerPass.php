@@ -17,7 +17,7 @@ class RegisterServiceCompilerPass implements CompilerPassInterface
      *
      * @param ContainerBuilder $container
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         // Nothing here, ORLY?
     }

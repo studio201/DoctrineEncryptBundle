@@ -18,9 +18,9 @@ class OpenSSLEncryptor implements EncryptorInterface
 
     private const PASSWORD = 'qq4fqFx$rq3r32';
 
-    private $iv;
+    private string $iv;
     private $password = "";
-    private $keyFile;
+    private string $keyFile;
 
 
 
@@ -35,14 +35,14 @@ class OpenSSLEncryptor implements EncryptorInterface
     /**
      * {@inheritdoc}
      */
-    public function encrypt($data) {
+    public function encrypt($data): string|bool {
         return openssl_encrypt($data, self::METHOD, $this->password, self::OPTIONS, $this->iv);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrypt($data) { //TODO data = null
+    public function decrypt($data): string|bool { //TODO data = null
         return openssl_decrypt($data, self::METHOD, $this->password, self::OPTIONS, $this->iv);
     }
 

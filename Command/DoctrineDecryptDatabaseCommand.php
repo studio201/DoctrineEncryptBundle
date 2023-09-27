@@ -4,6 +4,7 @@ namespace Studio201\DoctrineEncryptBundle\Command;
 
 use Studio201\DoctrineEncryptBundle\DependencyInjection\DoctrineEncryptExtension;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +22,7 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('doctrine:decrypt:database')
@@ -33,7 +34,7 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Get entity manager, question helper, subscriber service and annotation reader
         $question = $this->getHelper('question');
@@ -146,5 +147,6 @@ class DoctrineDecryptDatabaseCommand extends AbstractCommand
         }
 
         $output->writeln('' . PHP_EOL . 'Decryption finished values found: <info>' . $valueCounter . '</info>, decrypted: <info>' . $this->subscriber->decryptCounter . '</info>.' . PHP_EOL . 'All values are now decrypted.');
+        return Command::SUCCESS;
     }
 }

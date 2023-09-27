@@ -105,9 +105,8 @@ class OldCoreEncryptor implements EncryptorInterface
     const IV_MODE = 2;//MCRYPT_RAND;
     /**
      * Secret key for aes algorythm
-     * @var string
      */
-    private $secretKey;
+    private string $secretKey;
 
     /**
      * Initialization of encryptor
@@ -123,7 +122,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * @param $length
      * @return string
      */
-    public static function generateMd5($length)
+    public static function generateMd5($length): string
     {
         $max = ceil($length / 32);
         $random = '';
@@ -139,7 +138,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * @param $length
      * @return string
      */
-    public static function generateSha1($length)
+    public static function generateSha1($length): string
     {
         $max = ceil($length / 40);
         $random = '';
@@ -220,7 +219,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * @param $string
      * @return string
      */
-    private static function encode($string)
+    private static function encode($string): string
     {
         return base64_encode($string);
     }
@@ -230,7 +229,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * @param string $string
      * @return string
      */
-    public function decrypt($string)
+    public function decrypt($string): string
     {
         $key = $this->secretKey;
         //using hexadecimal
@@ -255,7 +254,7 @@ class OldCoreEncryptor implements EncryptorInterface
      * @param $string
      * @return string
      */
-    private static function decode($string)
+    private static function decode($string): string
     {
         return base64_decode($string);
     }

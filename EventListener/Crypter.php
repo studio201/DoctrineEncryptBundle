@@ -16,7 +16,7 @@ use Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
  */
 class Crypter
 {
-    protected $crypter;
+    protected \Studio201\DoctrineEncryptBundle\Encryptors\EncryptorInterface $crypter;
 
     /**
      * Crypter constructor.

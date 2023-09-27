@@ -15,20 +15,11 @@ use Symfony\Component\Console\Command\Command;
  **/
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
+    protected \Doctrine\ORM\EntityManagerInterface $entityManager;
 
-    /**
-     * @var DoctrineEncryptSubscriber
-     */
-    protected $subscriber;
+    protected \Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber $subscriber;
 
-    /**
-     * @var Reader
-     */
-    protected $annotationReader;
+    protected \Doctrine\Common\Annotations\Reader $annotationReader;
 
     /**
      * AbstractCommand constructor.
