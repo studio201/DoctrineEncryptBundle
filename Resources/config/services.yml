@@ -19,16 +19,27 @@ services:
     studio201_doctrine_encrypt.command.decrypt.database:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineDecryptDatabaseCommand
         tags: ['console.command']
-
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@annotation_reader"
+            - "@studio201_doctrine_encrypt.subscriber"
 
     studio201_doctrine_encrypt.command.encrypt.database:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptDatabaseCommand
         tags: ['console.command']
-
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@annotation_reader"
+            - "@studio201_doctrine_encrypt.subscriber"
 
     studio201_doctrine_encrypt.command.encrypt.status:
         class: Studio201\DoctrineEncryptBundle\Command\DoctrineEncryptStatusCommand
         tags: ['console.command']
+        arguments:
+            - "@doctrine.orm.entity_manager"
+            - "@annotation_reader"
+            - "@studio201_doctrine_encrypt.subscriber"
+
 
     studio201_doctrine_encrypt.service:
         class: Studio201\DoctrineEncryptBundle\Service\EncryptionService
