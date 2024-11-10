@@ -108,9 +108,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber
      *
      * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, EncryptorInterface $encryptor, $oldSecretKey = null)
+    public function __construct( EncryptorInterface $encryptor, $oldSecretKey = null)
     {
-        $this->annReader = $annReader;
+        //$this->annReader = $annReader;
         $this->encryptor = $encryptor;
         $this->restoreEncryptor = $this->encryptor;
         $this->secretKey = $oldSecretKey;
@@ -320,15 +320,15 @@ class DoctrineEncryptSubscriber implements EventSubscriber
 
             // Foreach property in the reflection class
             foreach ($properties as $refProperty) {
-                if ($this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded')) {
+               /* if ($this->annReader->getPropertyAnnotation($refProperty, 'Doctrine\ORM\Mapping\Embedded')) {
                     $this->handleEmbeddedAnnotation($entity, $refProperty, $isEncryptOperation);
                     continue;
-                }
+                }*/
 
                 /**
                  * If property is an normal value and contains the Encrypt tag, lets encrypt/decrypt that property
                  */
-                if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+             /*   if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
 
                     $pac = PropertyAccess::createPropertyAccessor();
                     $value = $pac->getValue($entity, $refProperty->getName());
@@ -384,16 +384,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber
                                     $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
                                 }
 
-                            } /*else {
-                              $currentPropValue = $value;
-                            }
-                            $pac->setValue($entity, $refProperty->getName(), $currentPropValue);
- */
+                            } 
 
 
                         }
                     }
-                }
+                }*/
             }
 
             return $entity;

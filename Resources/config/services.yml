@@ -1,7 +1,8 @@
 services:
     studio201_doctrine_encrypt.orm_subscriber:
         class: Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber
-        arguments: ["@annotation_reader", "@studio201_doctrine_encrypt.encryptor", "%studio201_doctrine_encrypt.old_secret_key%"]
+        autowire:
+        arguments: [ "@studio201_doctrine_encrypt.encryptor", "%studio201_doctrine_encrypt.old_secret_key%"]
         tags:
             -  { name: doctrine.event_subscriber }
         calls:
@@ -21,7 +22,7 @@ services:
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
+       #     - "@annotation_reader"
             - "@studio201_doctrine_encrypt.subscriber"
 
     studio201_doctrine_encrypt.command.encrypt.database:
@@ -29,7 +30,7 @@ services:
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
+       #     - "@annotation_reader"
             - "@studio201_doctrine_encrypt.subscriber"
 
     studio201_doctrine_encrypt.command.encrypt.status:
@@ -37,7 +38,7 @@ services:
         tags: ['console.command']
         arguments:
             - "@doctrine.orm.entity_manager"
-            - "@annotation_reader"
+        #    - "@annotation_reader"
             - "@studio201_doctrine_encrypt.subscriber"
 
 

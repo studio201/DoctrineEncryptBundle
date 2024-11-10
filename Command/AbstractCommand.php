@@ -19,7 +19,7 @@ abstract class AbstractCommand extends Command
 
     protected \Studio201\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber $subscriber;
 
-    protected \Doctrine\Common\Annotations\Reader $annotationReader;
+    //protected \Doctrine\Common\Annotations\Reader $annotationReader;
 
     /**
      * AbstractCommand constructor.
@@ -30,12 +30,12 @@ abstract class AbstractCommand extends Command
      */
     public function __construct(
         EntityManagerInterface $entityManager,
-        Reader $annotationReader,
+       // Reader $annotationReader,
         DoctrineEncryptSubscriber $subscriber
     ) {
         parent::__construct();
         $this->entityManager = $entityManager;
-        $this->annotationReader = $annotationReader;
+       // $this->annotationReader = $annotationReader;
         $this->subscriber = $subscriber;
     }
 
